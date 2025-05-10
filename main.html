@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Code Generator</title>
+  <style>
+    @font-face {
+      font-family: 'Hallowed Grounds';
+      src: local('Hallowed Grounds'), url('HallowedGrounds.woff2') format('woff2');
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    .mask-wrapper {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      mask-image: url('ink_lv2.gif');
+      mask-size: cover;
+      mask-position: center;
+      mask-repeat: no-repeat;
+
+      -webkit-mask-image: url('ink_lv2.gif');
+      -webkit-mask-size: cover;
+      -webkit-mask-position: center;
+      -webkit-mask-repeat: no-repeat;
+    }
+
+    .banner {
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+      background-image: url('bg.jpg');
+      background-size: cover;
+      background-position: center;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .title {
+      font-family: 'Hallowed Grounds', cursive;
+      font-size: 5em;
+      margin-bottom: 10px;
+    }
+
+    .content p {
+      margin-bottom: 30px;
+      font-size: 1.2rem;
+    }
+
+    .container {
+      background: linear-gradient(135deg, #a084bd, #689af2);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(83, 6, 6, 0.1);
+      padding: 20px;
+      max-width: 400px;
+      width: 100%;
+      color: #333;
+      margin: 0 auto;
+    }
+
+    .container h1 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group input {
+      width: 90%;
+      padding: 10px;
+      border: 1px solid #bdaeae;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    .btn {
+      background-color: #6a11cb;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #2575fc;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="mask-wrapper">
+    <div class="banner">
+      <div class="content">
+        <div class="title">Generate QR</div>
+        <div class="container">
+          <h1>Welcome</h1>
+          <div class="form-group">
+            <input type="text" id="link" placeholder="Enter your link (e.g., https://example.com)" />
+          </div>
+          <button class="btn" id="generate-btn">Generate QR Code</button>
+          <div id="qrcode"></div>
+          <button class="btn" id="download-btn" style="margin-top: 10px; display: none;">Download QR Code</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script>
+    const generateBtn = document.getElementById('generate-btn');
+    const qrcodeDiv = document.getElementById('qrcode');
+    const downloadBtn = document.getElementById('download-btn');
+    let currentCanvas = null;
+
+    generateBtn.addEventListener('click', () => {
+      const link = document.getElementById('link').value.trim();
+
+      if (link === '') {
+        alert('Please enter a valid link!');
+        return;
+      }
+
+      qrcodeDiv.innerHTML = '';
+      downloadBtn.style.display = 'none';
+
+      QRCode.toCanvas(link, { width: 250, margin: 2 }, (error, canvas) => {
+        if (error) {
+          console.error(error);
+          alert('Failed to generate QR code!');
+          return;
+        }
+        qrcodeDiv.appendChild(canvas);
+        currentCanvas = canvas;
+        downloadBtn.style.display = 'inline-block';
+      });
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!currentCanvas) return;
+
+      const link = document.createElement('a');
+      link.download = 'qr-code.png';
+      link.href = currentCanvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>
